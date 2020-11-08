@@ -24,8 +24,8 @@ test_sets="dev eval1"
 train_config=conf/train.yaml
 inference_config=conf/decode.yaml
 
-# g2p=g2p_en # Include word separator
-g2p=g2p_en_no_space # Include no word separator
+g2p=g2p_en # Include word separator
+#g2p=g2p_en_no_space # Include no word separator
 
 ./tts.sh \
     --lang en \

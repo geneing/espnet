@@ -208,6 +208,7 @@ def main():
                         fout.write(f"{uttid} {wavpath}\n")
                     else:
                         if args.fs is not None and args.fs != rate:
+                            print("%s" % wavpath)
                             # FIXME(kamo): To use sox?
                             wave = resampy.resample(
                                 wave.astype(np.float64), rate, args.fs, axis=0

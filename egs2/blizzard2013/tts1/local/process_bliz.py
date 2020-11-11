@@ -12,13 +12,19 @@ def read_data( source_dir ):
     with open(os.path.join(source_dir, 'all.txt'), 'r') as f:
         reader = csv.reader(f, delimiter='|')
         max_rows = 30000
+        skipped = 0
         for row in reader:
-            utt.append(row[0])
-            fpath.append(os.path.join(source_dir, row[1]))
-            str.append(row[2])
-            max_rows-=1
-            if max_rows<=0:
-                break
+            filepath = os.path.join(source_dir, row[1])
+            if( len(row[2]) > 40 and os.path.getsize(filepath)>40000 ):
+                utt.append(row[0])
+                fpath.append(filepath)
+                str.append(row[2])
+                max_rows-=1
+                if max_rows<=0:
+                    break
+            else:
+                skipped += 1
+    print("\n\nSkipped: %d\n\n"%skipped)
     return (utt,fpath,str)
 
 def save_data(a, utt, fpath, str):

@@ -52,9 +52,8 @@ class GlobalMVN(AbsNormalize, InversibleInterface):
             mean = sum_v / count
             var = sum_square_v / count - mean * mean
         std = np.sqrt(np.maximum(var, eps))
-
-        self.register_buffer("mean", torch.from_numpy(mean))
-        self.register_buffer("std", torch.from_numpy(std))
+        self.register_buffer("mean", torch.from_numpy(mean.astype(np.float32)))
+        self.register_buffer("std", torch.from_numpy(std.astype(np.float32)))
 
     def extra_repr(self):
         return (
@@ -75,23 +74,25 @@ class GlobalMVN(AbsNormalize, InversibleInterface):
             ilens = x.new_full([x.size(0)], x.size(1))
         norm_means = self.norm_means
         norm_vars = self.norm_vars
-        self.mean = self.mean.to(x.device, x.dtype)
-        self.std = self.std.to(x.device, x.dtype)
+        #print(x.device, x.dtype)
+        # self.mean = self.mean.to(x.device, x.dtype)
+        # self.std = self.std.to(x.device, x.dtype)
+        #print(self.mean.dtype, self.mean.device)
         mask = make_pad_mask(ilens, x, 1)
 
         # feat: (B, T, D)
         if norm_means:
             if x.requires_grad:
-                x = x - self.mean
+                x = x - self.mean.to(x.device, x.dtype)
             else:
-                x -= self.mean
+                x -= self.mean.to(x.device, x.dtype)
         if x.requires_grad:
             x = x.masked_fill(mask, 0.0)
         else:
             x.masked_fill_(mask, 0.0)
 
         if norm_vars:
-            x /= self.std
+            x /= self.std.to(x.device, x.dtype)
 
         return x, ilens
 

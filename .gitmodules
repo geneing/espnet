@@ -1,3 +1,6 @@
 [submodule "doc/notebook"]
 	path = doc/notebook
 	url = https://github.com/espnet/notebook
+[submodule "vocoder/hifi-gan"]
+	path = vocoder/hifi-gan
+	url = git@github.com:geneing/hifi-gan.git

@@ -1,6 +1,7 @@
 import librosa
 import torch
 from typing import Tuple
+import numpy as np
 
 from espnet.nets.pytorch_backend.nets_utils import make_pad_mask
 
@@ -48,7 +49,7 @@ class LogMel(torch.nn.Module):
         # Note(kamo): The mel matrix of librosa is different from kaldi.
         melmat = librosa.filters.mel(**_mel_options)
         # melmat: (D2, D1) -> (D1, D2)
-        self.register_buffer("melmat", torch.from_numpy(melmat.T).float())
+        self.register_buffer("melmat", torch.from_numpy(melmat.T.astype(np.float32)))
 
     def extra_repr(self):
         return ", ".join(f"{k}={v}" for k, v in self.mel_options.items())
@@ -59,7 +60,10 @@ class LogMel(torch.nn.Module):
         ilens: torch.Tensor = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         # feat: (B, T, D1) x melmat: (D1, D2) -> mel_feat: (B, T, D2)
-        mel_feat = torch.matmul(feat, self.melmat)
+        # print(feat.device, feat.dtype, feat.shape)
+        # print("\t",self.melmat.device, self.melmat.dtype, self.melmat.shape)
+
+        mel_feat = torch.matmul(feat, self.melmat.to(feat.device))
         mel_feat = torch.clamp(mel_feat, min=1e-10)
 
         if self.log_base is None:

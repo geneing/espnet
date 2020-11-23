@@ -30,10 +30,12 @@ class SoundScpReader(collections.abc.Mapping):
         dtype=np.int16,
         always_2d: bool = False,
         normalize: bool = False,
+        root_path: str = ""
     ):
         assert check_argument_types()
         self.fname = fname
         self.dtype = dtype
+        self.root_path = root_path
         self.always_2d = always_2d
         self.normalize = normalize
         self.data = read_2column_text(fname)
@@ -42,10 +44,10 @@ class SoundScpReader(collections.abc.Mapping):
         wav = self.data[key]
         if self.normalize:
             # soundfile.read normalizes data to [-1,1] if dtype is not given
-            array, rate = soundfile.read(wav, always_2d=self.always_2d)
+            array, rate = soundfile.read(self.root_path+wav, always_2d=self.always_2d)
         else:
             array, rate = soundfile.read(
-                wav, dtype=self.dtype, always_2d=self.always_2d
+                self.root_path+wav, dtype=self.dtype, always_2d=self.always_2d
             )
 
         return rate, array

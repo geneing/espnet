@@ -91,6 +91,7 @@ class Stft(torch.nn.Module, InversibleInterface):
             normalized=self.normalized,
             onesided=self.onesided,
         )
+        #print("\t\t\t\t", input.shape, output.shape)
         # output: (Batch, Freq, Frames, 2=real_imag)
         # -> (Batch, Frames, Freq, 2=real_imag)
         output = output.transpose(1, 2)
